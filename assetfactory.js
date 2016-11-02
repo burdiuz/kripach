@@ -36,52 +36,10 @@ class BaseAssetCanvas {
 
 const LampTextDraw = (Parent) => class extends Parent {
 
-  _lookup(pixels, x, y, cx, cy, max) {
-    let s = 0;
-    do {
-      s++;
-      x += cx;
-      y += cy;
-    } while (pixels.getPixelAlpha(x, y) && s < max);
-    return s;
-  }
-
-  _makeGradientFont(pixels, width) {
-    const hsba = new HSBA();
-    let pos = 0;
-    for (let color of pixels) {
-      if (RGBA.getAlpha(color) > 0) {
-        const x = pos % width;
-        const y = pos / width >> 0;
-        const maxDistance = 14;
-        const t = this._lookup(pixels, x, y, -1, 0, maxDistance); // go top
-        const b = this._lookup(pixels, x, y, 1, 0, maxDistance); // go bottom
-        const l = this._lookup(pixels, x, y, 0, -1, maxDistance); // go left
-        const r = this._lookup(pixels, x, y, 0, 1, maxDistance); // go right
-        const v = t + b;
-        const h = l + r;
-        const edge = Math.min(t, l, r, b);
-        hsba.value = color;
-        let c;
-        if (v < h) { // vertical
-          c = edge / (v * 0.5);
-        } else { // horizontal
-          c = edge / (h * 0.5);
-        }
-        hsba.b = 0.3 + 0.7 * c;//Math.min(1, c * 1.4);
-        pixels.setPixelByPosition(pos, hsba.value);
-      }
-      pos++;
-    }
-  }
-
   drawLampText() {
     this.clear();
     this.callTextDrawer();
-    const width = this.canvas.width;
-    const pixels = new Pixels(this.context.getImageData(0, 0, width, this.canvas.height));
-    this._makeGradientFont(pixels, width);
-    this.context.putImageData(pixels.valueOf(), 0, 0);
+    ConvexText.applyArea(this.context, 15);
     return this.capture();
   }
 };
