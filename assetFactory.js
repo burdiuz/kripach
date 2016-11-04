@@ -76,7 +76,7 @@ class AssetCanvas extends WallLightTextDraw(LightTextDraw(LampTextDraw(BaseAsset
 
   constructor(id,
               background = AssetCanvas._backgroundMandatoryParam(),
-              textDrawer = AssetCanvas._textDrawerMandatoryParam()) {
+              textDrawer) {
     super(id);
     this.setBackgroundImage(background);
     this.setTextDrawer(textDrawer);

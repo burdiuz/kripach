@@ -29,12 +29,12 @@ class SoundEffect {
     });
   }
 
-  play (loop) {
+  play(loop) {
     loop !== undefined && (this._soundElement.loop = loop);
     return this._soundElement.play();
   }
 
-  stop () {
+  stop() {
     return this._soundElement.stop();
   }
 
@@ -59,7 +59,7 @@ class SoundEffect {
   }
 
   get currentRatio() {
-    return 1 - this._currentValue / this._maxThreshold;
+    return this._currentValue / this._maxThreshold;
   }
 
   get minThreshold() {

@@ -30,7 +30,7 @@
     <span style="font: 48px 'AANeon';" >Text asset initialization</span >
     <canvas id="asset_factory" width="1920" height="1080" ></canvas >
 </div >
-<audio id="sound">
+<audio id="sound" >
     <source type="audio/mp3" src="data/sound.mp3" >
 </audio >
 <canvas id="canvas" width="1920" height="1080" ></canvas >
@@ -39,37 +39,24 @@
 <script type="text/javascript" src="node_modules/Pixels/Pixels.js" ></script >
 <script type="text/javascript" src="node_modules/ConvexText/ConvexText.js" ></script >
 <script type="text/javascript" src="soundEffect.js" ></script >
-<script type="text/javascript" src="assetfactory.js" ></script >
+<script type="text/javascript" src="assetFactory.js" ></script >
 <script type="text/javascript" >
 
     // TODO add sparkles with light paths for animation
 
-    const sound = new SoundEffect('sound', 5);
-    sound.onChange = (value, ratio) => {
-        console.log('VALUE:', ratio);
-    };
-    let assetFactory;
+    let animatedImg, staticImg;
+    const sound = new SoundEffect('sound', 5, 2);
     const bgImg = new Image();
-    bgImg.src = 'data/background.jpg';
-    bgImg.addEventListener('load', () => {
-        assetFactory = new AssetCanvas('asset_factory', bgImg, (context) => {
-            _text(context, 120, 500, -(Math.PI / 180) * 10);
-        });
-        setTimeout(() => {
-            const canvas = document.getElementById('canvas');
-            const cnx = canvas.getContext('2d');
-            assetFactory.compose().then((image) => {
-                // use source-in to make lightened wall
-                cnx.filter = 'brightness(7.5%)';
-                cnx.drawImage(bgImg, 0, 0);
-                cnx.filter = 'none';
-                cnx.drawImage(image, 0, 0);
-            });
-            sound.play();
-        }, 500);
-    });
 
-    const _text = (cnx, x, y, angle) => {
+    const _animatedText = (cnx, x, y, angle) => {
+        cnx.fillStyle = '#F433FF';
+        cnx.rotate(angle);
+        cnx.font = '220px "AANeon"';
+        cnx.fillText("C", x, y);
+        cnx.rotate(-angle);
+    };
+
+    const _staticText = (cnx, x, y, angle) => {
         cnx.fillStyle = '#F433FF';
         cnx.font = '92px "AANeon"';
         cnx.rotate(angle);
@@ -77,6 +64,36 @@
         cnx.font = '220px "AANeon"';
         cnx.fillText("  КРИПАЧEМ", x, y + 220);
         cnx.rotate(-angle);
-    }
+    };
+
+    bgImg.src = 'data/background.jpg';
+    bgImg.addEventListener('load', () => {
+        let assetFactory;
+        assetFactory = new AssetCanvas('asset_factory', bgImg, (context) => {
+            _animatedText(context, 182, 720, -(Math.PI / 180) * 10);
+        });
+        assetFactory.compose().then((image) => {
+            animatedImg = image;
+            assetFactory.setTextDrawer((context) => {
+                _staticText(context, 120, 500, -(Math.PI / 180) * 10);
+            });
+            assetFactory.compose().then((image) => {
+                staticImg = image;
+                sound.play(true);
+            });
+        });
+    });
+
+    sound.onChange = (value, ratio) => {
+        const canvas = document.getElementById('canvas');
+        const cnx = canvas.getContext('2d');
+        // use source-in to make lightened wall
+        cnx.filter = 'brightness(7.5%)';
+        cnx.drawImage(bgImg, 0, 0);
+        cnx.filter = 'none';
+        cnx.drawImage(staticImg, 0, 0);
+        cnx.filter = 'opacity(' + (ratio * 100 >>> 0) + '%)';
+        cnx.drawImage(animatedImg, 0, 0);
+    };
 </script >
 </html >
