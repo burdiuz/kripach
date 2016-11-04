@@ -7,7 +7,7 @@
 class BaseAssetCanvas {
   constructor(id) {
     this.canvas = document.getElementById(id);
-    this.context = this.canvas.getContext('2d');
+    this._context = this.canvas.getContext('2d');
   }
 
   setTextDrawer(drawHandler) {
@@ -15,18 +15,18 @@ class BaseAssetCanvas {
   }
 
   callTextDrawer() {
-    this._drawHandler(this.context);
+    this._drawHandler(this._context);
   }
 
   clear() {
-    this.context.filter = 'none';
-    this.context.globalCompositeOperation = 'source-over';
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.context.restore();
+    this._context.filter = 'none';
+    this._context.globalCompositeOperation = 'source-over';
+    this._context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this._context.restore();
   }
 
   draw(image) {
-    this.context.drawImage(image, 0, 0);
+    this._context.drawImage(image, 0, 0);
   }
 
   capture() {
@@ -39,7 +39,7 @@ const LampTextDraw = (Parent) => class extends Parent {
   drawLampText() {
     this.clear();
     this.callTextDrawer();
-    ConvexText.applyArea(this.context, 15);
+    ConvexText.applyArea(this._context, 15);
     return this.capture();
   }
 };
@@ -47,7 +47,7 @@ const LampTextDraw = (Parent) => class extends Parent {
 const LightTextDraw = (Parent) => class extends Parent {
   drawSpecularLightText() {
     this.clear();
-    this.context.filter = 'blur(25px)';
+    this._context.filter = 'blur(25px)';
     this.callTextDrawer();
     const bmp = this.capture();
     return bmp;
@@ -62,10 +62,10 @@ const WallLightTextDraw = (Parent) => class extends Parent {
 
   drawReflectionLightText() {
     this.clear();
-    this.context.filter = 'blur(25px)';
+    this._context.filter = 'blur(25px)';
     this.callTextDrawer();
-    this.context.filter = 'none';
-    this.context.globalCompositeOperation = 'source-in';
+    this._context.filter = 'none';
+    this._context.globalCompositeOperation = 'source-in';
     this.draw(this._backgroundImage);
     return this.capture();
   }

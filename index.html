@@ -30,16 +30,24 @@
     <span style="font: 48px 'AANeon';" >Text asset initialization</span >
     <canvas id="asset_factory" width="1920" height="1080" ></canvas >
 </div >
+<audio id="sound">
+    <source type="audio/mp3" src="data/sound.mp3" >
+</audio >
 <canvas id="canvas" width="1920" height="1080" ></canvas >
 </body >
 <script type="text/javascript" src="node_modules/Color/Color.js" ></script >
 <script type="text/javascript" src="node_modules/Pixels/Pixels.js" ></script >
 <script type="text/javascript" src="node_modules/ConvexText/ConvexText.js" ></script >
+<script type="text/javascript" src="soundEffect.js" ></script >
 <script type="text/javascript" src="assetfactory.js" ></script >
 <script type="text/javascript" >
 
     // TODO add sparkles with light paths for animation
 
+    const sound = new SoundEffect('sound', 5);
+    sound.onChange = (value, ratio) => {
+        console.log('VALUE:', ratio);
+    };
     let assetFactory;
     const bgImg = new Image();
     bgImg.src = 'data/background.jpg';
@@ -57,6 +65,7 @@
                 cnx.filter = 'none';
                 cnx.drawImage(image, 0, 0);
             });
+            sound.play();
         }, 500);
     });
 
@@ -66,7 +75,7 @@
         cnx.rotate(angle);
         cnx.fillText("Я_ВСЕГДА_ХОТЕЛ_БЫТЬ", x + 60, y);
         cnx.font = '220px "AANeon"';
-        cnx.fillText("СКРИПАЧEМ", x, y + 220);
+        cnx.fillText("  КРИПАЧEМ", x, y + 220);
         cnx.rotate(-angle);
     }
 </script >
