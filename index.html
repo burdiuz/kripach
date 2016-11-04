@@ -91,8 +91,9 @@
         cnx.filter = 'brightness(7.5%)';
         cnx.drawImage(bgImg, 0, 0);
         cnx.filter = 'none';
+        cnx.filter = 'opacity(' + parseInt(75 + (1-ratio) * 25 >>> 0) + '%)';
         cnx.drawImage(staticImg, 0, 0);
-        cnx.filter = 'opacity(' + (ratio * 100 >>> 0) + '%)';
+        cnx.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
         cnx.drawImage(animatedImg, 0, 0);
     };
 </script >
