@@ -70,4 +70,16 @@ class SoundEffect {
     return this._maxThreshold;
   }
 
+  get playing() {
+    return !this._soundElement.paused;
+  }
+
+  get currentTime() {
+    return this._soundElement.currentTime;
+  }
+
+  get duration() {
+    return this._soundElement.duration;
+  }
+
 }

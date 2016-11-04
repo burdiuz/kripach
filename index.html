@@ -40,12 +40,14 @@
 <script type="text/javascript" src="node_modules/ConvexText/ConvexText.js" ></script >
 <script type="text/javascript" src="soundEffect.js" ></script >
 <script type="text/javascript" src="assetFactory.js" ></script >
+<script type="text/javascript" src="scene.js" ></script >
 <script type="text/javascript" >
 
-    // TODO add sparkles with light paths for animation
+    // TODO add sparks with light paths for animation
 
     let animatedImg, staticImg;
     const sound = new SoundEffect('sound', 5, 2);
+    const scene = new Scene(null, 60);
     const bgImg = new Image();
 
     const _animatedText = (cnx, x, y, angle) => {
@@ -83,18 +85,24 @@
             });
         });
     });
-
-    sound.onChange = (value, ratio) => {
+    scene.onFrame = (() => {
         const canvas = document.getElementById('canvas');
         const cnx = canvas.getContext('2d');
-        // use source-in to make lightened wall
-        cnx.filter = 'brightness(7.5%)';
-        cnx.drawImage(bgImg, 0, 0);
-        cnx.filter = 'none';
-        cnx.filter = 'opacity(' + parseInt(75 + (1-ratio) * 25 >>> 0) + '%)';
-        cnx.drawImage(staticImg, 0, 0);
-        cnx.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
-        cnx.drawImage(animatedImg, 0, 0);
+        return () => {
+            if (!sound.playing) return;
+            let ratio = sound.currentRatio;
+            // use source-in to make lightened wall
+            cnx.filter = 'brightness(7.5%)';
+            cnx.drawImage(bgImg, 0, 0);
+            cnx.filter = 'none';
+            cnx.filter = 'opacity(' + parseInt(75 + (1 - ratio) * 25 >>> 0) + '%)';
+            cnx.drawImage(staticImg, 0, 0);
+            cnx.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
+            cnx.drawImage(animatedImg, 0, 0);
+        };
+    })();
+    sound.onChange = () => {
+        scene.invalid();
     };
 </script >
 </html >
