@@ -40,6 +40,7 @@
 <script type="text/javascript" src="node_modules/ConvexText/ConvexText.js" ></script >
 <script type="text/javascript" src="soundEffect.js" ></script >
 <script type="text/javascript" src="assetFactory.js" ></script >
+<script type="text/javascript" src="sparks.js" ></script >
 <script type="text/javascript" src="scene.js" ></script >
 <script type="text/javascript" >
 
@@ -88,6 +89,7 @@
     scene.onFrame = (() => {
         const canvas = document.getElementById('canvas');
         const cnx = canvas.getContext('2d');
+        const spark = new Spark(cnx, 100, 100, 100, 100);
         return () => {
             if (!sound.playing) return;
             let ratio = sound.currentRatio;
@@ -99,6 +101,8 @@
             cnx.drawImage(staticImg, 0, 0);
             cnx.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
             cnx.drawImage(animatedImg, 0, 0);
+            cnx.filter = 'none';
+            spark.update(0);
         };
     })();
     sound.onChange = () => {
