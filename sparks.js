@@ -15,56 +15,27 @@ class SparksHistory {
   }
 }
 
-class Sparks {
-  constructor(areaWidth, areaHeight, sparkCount = Sparks.getRandomSparkCount()) {
-    this._animation = null;
-    this._initialize(areaWidth, areaHeight);
-    this._generate(areaWidth / 2, sparkCount);
-
+class SparksSource {
+  constructor(context, x, y, duration, maxDistance = 250, sparkCount = 5) {
+    this._context = context;
+    this._x = x;
+    this._y = y;
+    this._generate(maxDistance << 1, context.canvas.height - y, sparkCount, duration);
   }
 
-  _initialize(areaWidth, areaHeight) {
-    const canvas = this._canvas = document.createElement('canvas');
-    canvas.width = areaWidth;
-    canvas.height = areaHeight;
-    this._context = canvas.getContext('2d');
-  }
-
-  _generate(maxDistance, sparkCount) {
-    const height = this._canvas.height;
+  _generate(maxDistance, height, sparkCount, maxDuration) {
     this._sparks = [];
     while (sparkCount > 0) {
-      this._sparks.push(new Spark(this._context, maxDistance, 0, Math.random() > 0.5 ? maxDistance : -maxDistance, height));
+      let eff = Math.random();
+      let distance = maxDistance >> 1 + eff * (maxDistance >> 1);
+      let duration = maxDuration * 0.5 + eff * (maxDuration * 0.5);
+      this._sparks.push(new Spark(this._context, this._x, this._y, Math.random() > 0.5 ? distance : -distance, height, SparkMovement.getSpeed(duration)));
       sparkCount--;
-    }
-  }
-
-  *animate() {
-    const time = Date.now(); // TODO calculate speed with acceleration
-    while (!this.destroyed) {
-      yield 1;
     }
   }
 
   get destroyed() {
     return !this._sparks || !this._sparks.length;
-  }
-
-  destroy() {
-
-  }
-
-  static getRandomSparkCount() {
-    return 6 + Math.random() * 5 >> 0;
-  }
-}
-
-class SparksSource extends Sparks {
-  constructor(context, x, y, maxDistance = 250, sparkCount = Sparks.getRandomSparkCount()) {
-    this._targetContext = context;
-    this._x = x;
-    this._y = y;
-    super(maxDistance << 1, context.canvas.height - y, sparkCount);
   }
 
   get x() {
@@ -75,10 +46,40 @@ class SparksSource extends Sparks {
     return this._y;
   }
 
-  draw() {
-    // TODO draw on target context, this will iterate animation and draw
+  update() {
+    let length = this._sparks.length;
+    for (let index = 0; index < length; index++) {
+      let item = this._sparks[index];
+      item.update();
+      if (item.destroyed) {
+        this._sparks.splice(index, 1);
+        index--;
+        length--;
+      }
+    }
   }
 }
+
+class Sparks extends SparksSource {
+  constructor(context, x, y, maxDistance = 250, sparkCount = Sparks.getRandomSparkCount()) {
+    super(context, x, y, maxDistance / 125, maxDistance, sparkCount);
+  }
+
+  *animate() {
+    while (!this.destroyed) {
+      yield true;
+      this.update();
+    }
+  }
+
+  static getRandomSparkCount() {
+    return 6 + Math.random() * 5 >> 0;
+  }
+}
+
+/*
+ http://www.timotheegroleau.com/Flash/experiments/easing_function_generator.htm
+ */
 
 class SparkPosition {
   constructor(startX, startY, offsetX, offsetY) {
@@ -88,9 +89,10 @@ class SparkPosition {
       startX,
       startY,
       offsetX,
-      offsetY
+      offsetY,
+      endX: startX + offsetX,
+      endY: startY + offsetY
     });
-    // add acceleration and curved trajectory y = x^2
   }
 
   get destroyed() {
@@ -99,9 +101,47 @@ class SparkPosition {
 
   update(progress) {
     const x = this.offsetX * progress;
-    const y = this.offsetY * progress;
+    const y = this.offsetY * (progress * progress * progress / 3);
     this.x = this.startX + x;
     this.y = this.startY + y;
+  }
+
+}
+
+class SparkMovement extends SparkPosition {
+  constructor(startX, startY, offsetX, offsetY, speed, acceleration = 0) {
+    super(startX, startY, offsetX, offsetY);
+    this._destroyed = false;
+    this._progress = 0;
+    this.setSpeed(speed, acceleration);
+  }
+
+  setSpeed(speed, acceleration = 0) {
+    this._speed = speed;
+    this._acceleration = acceleration;
+  }
+
+  get progress() {
+    return this._progress;
+  }
+
+  get destroyed() {
+    return this._destroyed;
+  }
+
+  update(progress) {
+    if (this._destroyed) return;
+    this._progress += this._speed;
+    this._speed += this._acceleration;
+    super.update(this._progress);
+    if (this._progress > 1 || super.destroyed) {
+      this._progress = 1;
+      this._destroyed = true;
+    }
+  }
+
+  static getSpeed(duration, fps = 24) {
+    return 1 / (duration * fps);
   }
 }
 
@@ -112,6 +152,7 @@ class SparkAsset {
   }
 
   draw(x, y, progress) {
+    // FIXME Must be cached, takes too longto redraw
     const ap = 1 - progress;
     const context = this.context;
     context.filter = 'blur(' + parseInt(this.maxBlur * ap) + 'px)';
@@ -122,7 +163,7 @@ class SparkAsset {
     context.beginPath();
     context.fillStyle = 'rgb(255, 255, 125)';
     context.filter = 'none';
-    context.arc(x, y, 2, 0, PI2, false);
+    context.arc(x, y, 1, 0, PI2, false);
     context.fill();
   }
 
@@ -132,13 +173,19 @@ class SparkAsset {
 }
 
 class Spark {
-  constructor(context, startX, startY, endX, endY) {
-    this._position = new SparkPosition(startX, startY, endX, endY);
+  constructor(context, startX, startY, endX, endY, speed, acceleration = 0) {
+    this._position = new SparkMovement(startX, startY, endX, endY, speed, acceleration);
     this._asset = new SparkAsset(context);
   }
 
-  update(progress) {
-    this._position.update(progress);
-    this._asset.draw(this._position.x, this._position.y, progress);
+  get destroyed() {
+    return this._position.destroyed;
+  }
+
+  update() {
+    this._position.update();
+    if (!this._position.destroyed) {
+      this._asset.draw(this._position.x, this._position.y, this._position.progress);
+    }
   }
 }

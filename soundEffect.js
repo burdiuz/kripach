@@ -8,7 +8,8 @@ class SoundEffect {
     this._currentValue = 0;
     this._context = new AudioContext();
     this._sourceNode = this._context.createMediaElementSource(this._soundElement);
-    this._scriptNode = this._context.createScriptProcessor(256, 1, 1);
+    this._scriptNode = this._context.createScriptProcessor(1024, 1, 1);
+    //this._scriptNode = this._context.createScriptProcessor(256, 1, 1);
 
     this._sourceNode.connect(this._scriptNode);
     this._scriptNode.connect(this._context.destination);

@@ -18,6 +18,10 @@
             overflow: hidden;
         }
 
+        body {
+            background-color: black;
+        }
+
         #assets {
             width: 0px;
             height: 0px;
@@ -44,69 +48,78 @@
 <script type="text/javascript" src="scene.js" ></script >
 <script type="text/javascript" >
 
-    // TODO add sparks with light paths for animation
+  // TODO add sparks with light paths for animation
 
-    let animatedImg, staticImg;
-    const sound = new SoundEffect('sound', 5, 2);
-    const scene = new Scene(null, 60);
-    const bgImg = new Image();
+  let animatedImg, staticImg;
+  const sound = new SoundEffect('sound', 5, 2);
+  const scene = new Scene(null, 24);
+  const bgImg = new Image();
 
-    const _animatedText = (cnx, x, y, angle) => {
-        cnx.fillStyle = '#F433FF';
-        cnx.rotate(angle);
-        cnx.font = '220px "AANeon"';
-        cnx.fillText("C", x, y);
-        cnx.rotate(-angle);
-    };
+  const _animatedText = (cnx, x, y, angle) => {
+    cnx.fillStyle = '#F433FF';
+    cnx.rotate(angle);
+    cnx.font = '220px "AANeon"';
+    cnx.fillText("C", x, y);
+    cnx.rotate(-angle);
+  };
 
-    const _staticText = (cnx, x, y, angle) => {
-        cnx.fillStyle = '#F433FF';
-        cnx.font = '92px "AANeon"';
-        cnx.rotate(angle);
-        cnx.fillText("Я_ВСЕГДА_ХОТЕЛ_БЫТЬ", x + 60, y);
-        cnx.font = '220px "AANeon"';
-        cnx.fillText("  КРИПАЧEМ", x, y + 220);
-        cnx.rotate(-angle);
-    };
+  const _staticText = (cnx, x, y, angle) => {
+    cnx.fillStyle = '#F433FF';
+    cnx.font = '92px "AANeon"';
+    cnx.rotate(angle);
+    cnx.fillText("Я_ВСЕГДА_ХОТЕЛ_БЫТЬ", x + 60, y);
+    cnx.font = '220px "AANeon"';
+    cnx.fillText("  КРИПАЧEМ", x, y + 220);
+    cnx.rotate(-angle);
+  };
 
-    bgImg.src = 'data/background.jpg';
-    bgImg.addEventListener('load', () => {
-        let assetFactory;
-        assetFactory = new AssetCanvas('asset_factory', bgImg, (context) => {
-            _animatedText(context, 182, 720, -(Math.PI / 180) * 10);
-        });
-        assetFactory.compose().then((image) => {
-            animatedImg = image;
-            assetFactory.setTextDrawer((context) => {
-                _staticText(context, 120, 500, -(Math.PI / 180) * 10);
-            });
-            assetFactory.compose().then((image) => {
-                staticImg = image;
-                sound.play(true);
-            });
-        });
+  bgImg.src = 'data/background.jpg';
+
+  let sparks;
+  let sparksAnimation;
+
+  bgImg.addEventListener('load', () => {
+    let assetFactory;
+    assetFactory = new AssetCanvas('asset_factory', bgImg, (context) => {
+      _animatedText(context, 182, 720, -(Math.PI / 180) * 10);
     });
-    scene.onFrame = (() => {
-        const canvas = document.getElementById('canvas');
-        const cnx = canvas.getContext('2d');
-        const spark = new Spark(cnx, 100, 100, 100, 100);
-        return () => {
-            if (!sound.playing) return;
-            let ratio = sound.currentRatio;
-            // use source-in to make lightened wall
-            cnx.filter = 'brightness(7.5%)';
-            cnx.drawImage(bgImg, 0, 0);
-            cnx.filter = 'none';
-            cnx.filter = 'opacity(' + parseInt(75 + (1 - ratio) * 25 >>> 0) + '%)';
-            cnx.drawImage(staticImg, 0, 0);
-            cnx.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
-            cnx.drawImage(animatedImg, 0, 0);
-            cnx.filter = 'none';
-            spark.update(0);
-        };
-    })();
-    sound.onChange = () => {
+    assetFactory.compose().then((image) => {
+      animatedImg = image;
+      assetFactory.setTextDrawer((context) => {
+        _staticText(context, 120, 500, -(Math.PI / 180) * 10);
+      });
+      assetFactory.compose().then((image) => {
+        staticImg = image;
+        sparks = new Sparks(canvas.getContext('2d'), 500, 500);
+        sparksAnimation = sparks.animate();
+        sound.play(true);
+      });
+    });
+  });
+  scene.onFrame = (() => {
+    const canvas = document.getElementById('canvas');
+    const cnx = canvas.getContext('2d');
+
+    return () => {
+      if (!sound.playing) return;
+      let ratio = sound.currentRatio;
+      cnx.clearRect(0, 0, canvas.width, canvas.height);
+      // use source-in to make lightened wall
+      //cnx.filter = 'brightness(7.5%)';
+      //cnx.drawImage(bgImg, 0, 0);
+      //cnx.filter = 'none';
+      //cnx.filter = 'opacity(' + parseInt(75 + (1 - ratio) * 25 >>> 0) + '%)';
+      //cnx.drawImage(staticImg, 0, 0);
+      //cnx.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
+      //cnx.drawImage(animatedImg, 0, 0);
+      cnx.filter = 'none';
+      if (!sparksAnimation.next().done) {
         scene.invalid();
+      }
     };
+  })();
+  sound.onChange = () => {
+    scene.invalid();
+  };
 </script >
 </html >
