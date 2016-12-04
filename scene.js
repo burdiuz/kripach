@@ -7,7 +7,9 @@ class Scene {
     this._intervalHandler = () => {
       if (this._invalid) {
         this._invalid = false;
-        this._onFrame && this._onFrame();
+        if (this._onFrame) {
+          window.requestAnimationFrame(this._onFrame);
+        }
       }
     };
     start && this.start();
