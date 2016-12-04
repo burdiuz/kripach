@@ -152,25 +152,66 @@ class SparkAsset {
   }
 
   draw(x, y, progress) {
-    // FIXME Must be cached, takes too longto redraw
-    const ap = 1 - progress;
-    const context = this.context;
-    context.filter = 'blur(' + parseInt(this.maxBlur * ap) + 'px)';
-    context.fillStyle = 'rgba(255, 255, 125, ' + String(0.25 + 0.75 * ap) + ')';
+    const POS = SparkAsset.SIZE >> 1;
+    if (!this._cached) {
+      this._cached = SparkAsset.createAsset(this.maxBlur);
+    }
+    this.context.filter = 'opacity(' + parseInt(25 + (1 - progress) * 75 >>> 0) + '%)';
+    this.context.drawImage(this._cached, x - POS, y - POS);
+  }
+
+  static getRandomMaxBlur() {
+    return 3 + Math.random() * 7 >> 0;
+  }
+
+  static createAsset(blur) {
+    SparkAsset._drawAsset(blur);
+    const img = new Image();
+    img.src = SparkAsset._getAssetCanvas().toDataURL('image/png', 1);
+    img.width = SparkAsset.SIZE;
+    img.height = SparkAsset.SIZE;
+    return img;
+  }
+
+  static _drawAsset(blur) {
+    const POS = SparkAsset.SIZE >> 1;
+    const context = SparkAsset._getAssetContext();
+    context.clearRect(0, 0, SparkAsset.SIZE, SparkAsset.SIZE);
+    context.filter = 'blur(' + parseInt(blur) + 'px)';
+    context.fillStyle = 'rgba(255, 255, 125, ' + String(0.25 + 0.75 * Math.random()) + ')';
     context.beginPath();
-    context.arc(x, y, 5 - 5 * progress, 0, PI2, false);
+    context.arc(POS, POS, 5, 0, PI2, false);
     context.fill();
     context.beginPath();
     context.fillStyle = 'rgb(255, 255, 125)';
     context.filter = 'none';
-    context.arc(x, y, 1, 0, PI2, false);
+    context.arc(POS, POS, 2, 0, PI2, false);
     context.fill();
   }
 
-  static getRandomMaxBlur() {
-    return 5 + Math.random() * 5 >> 0;
+  static _createAssetCanvas() {
+    const canvas = SparkAsset._canvas = document.createElement('canvas');
+    canvas.width = SparkAsset.SIZE;
+    canvas.height = SparkAsset.SIZE;
+    SparkAsset._context = canvas.getContext('2d');
+  }
+
+  static _getAssetCanvas() {
+    if (!SparkAsset._canvas) {
+      SparkAsset._createAssetCanvas();
+    }
+    return SparkAsset._canvas;
+  }
+
+  static _getAssetContext() {
+    if (!SparkAsset._context) {
+      SparkAsset._createAssetCanvas();
+    }
+    return SparkAsset._context;
   }
 }
+
+SparkAsset.SIZE = 24;
 
 class Spark {
   constructor(context, startX, startY, endX, endY, speed, acceleration = 0) {
