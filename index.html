@@ -23,8 +23,13 @@
         }
 
         #background {
+            position: absolute;
             filter: brightness(7.5%);
-            background: url("data/background.jpg") no-repeat fixed left top / 100% 100%;
+            background: url("data/background.jpg") no-repeat fixed center / 100% 100%;
+        }
+
+        #canvas {
+            position: absolute;
         }
 
         #assets {
@@ -42,8 +47,10 @@
 <audio id="sound" >
     <source type="audio/mp3" src="data/sound.mp3" >
 </audio >
-<div id="background"></div>
-<canvas id="canvas" width="1920" height="1080" ></canvas>
+<div id="background" ></div >
+<div >
+    <canvas id="canvas" width="1920" height="1080" ></canvas >
+</div >
 </body >
 <script type="text/javascript" src="node_modules/Color/Color.js" ></script >
 <script type="text/javascript" src="node_modules/Pixels/Pixels.js" ></script >
@@ -112,10 +119,15 @@
       let ratio = sound.currentRatio;
       cnx.clearRect(0, 0, canvas.width, canvas.height);
       // use source-in to make lightened wall
+      /* bg image
+      cnx.filter = 'brightness(7.5%)';
+      cnx.drawImage(bgImg, 0, 0);
+      cnx.filter = 'none';
+      //*/
       cnx.filter = 'opacity(' + parseInt(75 + (1 - ratio) * 25 >>> 0) + '%)';
       cnx.drawImage(staticImg, 0, 0);
-      //cnx.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
-      //cnx.drawImage(animatedImg, 0, 0);
+      cnx.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
+      cnx.drawImage(animatedImg, 0, 0);
       cnx.filter = 'none';
       if (!sparksAnimation.next().done) {
         scene.invalid();
@@ -125,5 +137,5 @@
   sound.onChange = () => {
     scene.invalid();
   };
-</script>
+</script >
 </html >
