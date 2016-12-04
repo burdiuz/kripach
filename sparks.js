@@ -3,15 +3,29 @@
 const PI2 = Math.PI * 2;
 
 class SparksHistory {
-  constructor(asset) {
-
+  constructor(context) {
+    this._context = context;
+    this._history = [];
   }
 
-  addStartPoint(x, y) {
-
+  start(x, y) {
+    const sparks = new Sparks(this._context, x, y);
+    this._history.push(sparks.animate());
   }
 
-  draw(context) {
+  animate() {
+    let length = this._history.length;
+    if (!length) return false;
+    for (let index = 0; index < length; index++) {
+      let item = this._history[index];
+      let state = item.next();
+      if (state.done) {
+        this._history.splice(index, 1);
+        index--;
+        length--;
+      }
+    }
+    return true;
   }
 }
 
@@ -62,7 +76,7 @@ class SparksSource {
 
 class Sparks extends SparksSource {
   constructor(context, x, y, maxDistance = 250, sparkCount = Sparks.getRandomSparkCount()) {
-    super(context, x, y, maxDistance / 125, maxDistance, sparkCount);
+    super(context, x, y, maxDistance / 250, maxDistance, sparkCount);
   }
 
   *animate() {

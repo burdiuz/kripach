@@ -87,7 +87,14 @@
   bgImg.src = 'data/background.jpg';
 
   let sparks;
-  let sparksAnimation;
+
+  const start = () => {
+    sparks = new SparksHistory(canvas.getContext('2d'));
+    sound.play(true);
+
+    // sparks test
+    sparks.start(500, 500);
+  }
 
   bgImg.addEventListener('load', () => {
     let assetFactory;
@@ -101,33 +108,26 @@
       });
       assetFactory.compose().then((image) => {
         staticImg = image;
-        sparks = new Sparks(canvas.getContext('2d'), 500, 500);
-        sparksAnimation = sparks.animate();
-        sound.play(true);
+        start();
       });
     });
   });
 
   scene.onFrame = (() => {
     const canvas = document.getElementById('canvas');
-    const cnx = canvas.getContext('2d');
+    const context = canvas.getContext('2d');
 
     return () => {
       if (!sound.playing) return;
       let ratio = sound.currentRatio;
-      cnx.clearRect(0, 0, canvas.width, canvas.height);
+      context.clearRect(0, 0, canvas.width, canvas.height);
       // use source-in to make lightened wall
-      /* bg image
-      cnx.filter = 'brightness(7.5%)';
-      cnx.drawImage(bgImg, 0, 0);
-      cnx.filter = 'none';
-      //*/
-      cnx.filter = 'opacity(' + parseInt(75 + (1 - ratio) * 25 >>> 0) + '%)';
-      cnx.drawImage(staticImg, 0, 0);
-      cnx.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
-      cnx.drawImage(animatedImg, 0, 0);
-      cnx.filter = 'none';
-      if (!sparksAnimation.next().done) {
+      context.filter = 'opacity(' + parseInt(75 + (1 - ratio) * 25 >>> 0) + '%)';
+      context.drawImage(staticImg, 0, 0);
+      context.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
+      context.drawImage(animatedImg, 0, 0);
+      context.filter = 'none';
+      if (sparks.animate()) {
         scene.invalid();
       }
     };
