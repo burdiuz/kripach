@@ -55,7 +55,9 @@
 <script type="text/javascript" src="node_modules/Color/Color.js" ></script >
 <script type="text/javascript" src="node_modules/Pixels/Pixels.js" ></script >
 <script type="text/javascript" src="node_modules/ConvexText/ConvexText.js" ></script >
+<script type="text/javascript" src="node_modules/MultiHandlerFactory/MultiHandlerFactory.js" ></script >
 <script type="text/javascript" src="soundEffect.js" ></script >
+<script type="text/javascript" src="soundEvent.js" ></script >
 <script type="text/javascript" src="assetFactory.js" ></script >
 <script type="text/javascript" src="sparks.js" ></script >
 <script type="text/javascript" src="scene.js" ></script >
@@ -65,6 +67,7 @@
   const sound = new SoundEffect('sound', 5, 2);
   const scene = new Scene(null, 24);
   const bgImg = new Image();
+  const events = new SoundEvents('sound');
 
   const _animatedText = (cnx, x, y, angle) => {
     cnx.fillStyle = '#F433FF';
@@ -91,9 +94,8 @@
   const start = () => {
     sparks = new SparksHistory(canvas.getContext('2d'));
     sound.play(true);
-
-    // sparks test
-    sparks.start(500, 500);
+    events.add(1891, () => sparks.start(305, 667));
+    events.add(3015, () => sparks.start(457, 643));
   }
 
   bgImg.addEventListener('load', () => {
