@@ -1,4 +1,4 @@
-# Kriach
+# Kripach
 
 ### TODOs
 * Optimize static assets, make them one image
