@@ -1,5 +1,7 @@
 'use strict';
 
+import {ConvexText} from 'ConvexText';
+
 // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Compositing
 // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/filter
 // https://developer.mozilla.org/ru/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation

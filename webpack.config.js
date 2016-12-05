@@ -1,6 +1,7 @@
+const webpack = require('webpack');
+const path = require('path');
 module.exports = {
-  context: 'd:/www/my/kripach/source',
-  entry: './index.js',
+  entry: ['babel-polyfill', './source/index.js'],
   output: {
     path: './bin',
     filename: 'app.bundle.js',
@@ -8,8 +9,22 @@ module.exports = {
   module: {
     loaders: [{
       test: /\.js$/,
-      exclude: /node_modules/,
+      //exclude: /node_modules/,
+      include: [
+        path.resolve(__dirname, 'node_modules/Color'),
+        path.resolve(__dirname, 'node_modules/Pixels'),
+        path.resolve(__dirname, 'node_modules/ConvexText'),
+        path.resolve(__dirname, 'node_modules/MultiHandlerFactory'),
+        path.resolve(__dirname, 'source')
+      ],
       loader: 'babel-loader'
     }]
-  }
-}
+  },
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    })
+  ]
+};

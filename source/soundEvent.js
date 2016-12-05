@@ -1,5 +1,7 @@
 'use strict';
 
+import handlerFactory from 'MultiHandlerFactory';
+
 class SoundEvent {
   constructor(time, handler) {
     this.time = time;
