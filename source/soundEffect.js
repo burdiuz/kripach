@@ -1,6 +1,6 @@
 'use strict';
 
-class SoundEffect {
+export default class SoundEffect {
   constructor(soundId, maxThreshold, minThreshold = 0.5) {
     this._soundElement = document.getElementById(soundId);
     this._maxThreshold = maxThreshold;

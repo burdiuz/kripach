@@ -1,6 +1,6 @@
 'use strict';
 
-class Scene {
+export default class Scene {
   constructor(onFrame = null, fps = 24, start = true) {
     this.onFrame = onFrame;
     this._framesPerSecond = fps;

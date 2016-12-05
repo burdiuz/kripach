@@ -72,7 +72,7 @@ const WallLightTextDraw = (Parent) => class extends Parent {
 };
 
 // ES6 mixins http://www.2ality.com/2016/05/six-nifty-es6-tricks.html
-class AssetCanvas extends WallLightTextDraw(LightTextDraw(LampTextDraw(BaseAssetCanvas))) {
+export default class AssetCanvas extends WallLightTextDraw(LightTextDraw(LampTextDraw(BaseAssetCanvas))) {
 
   constructor(id,
               background = AssetCanvas._backgroundMandatoryParam(),

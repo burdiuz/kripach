@@ -2,7 +2,7 @@
 
 const PI2 = Math.PI * 2;
 
-class SparksHistory {
+export default class SparksHistory {
   constructor(context) {
     this._context = context;
     this._history = [];
@@ -74,7 +74,7 @@ class SparksSource {
   }
 }
 
-class Sparks extends SparksSource {
+export class Sparks extends SparksSource {
   constructor(context, x, y, maxDistance = 200, sparkCount = Sparks.getRandomSparkCount()) {
     super(context, x, y, maxDistance / 150, maxDistance, sparkCount);
   }
@@ -227,7 +227,7 @@ class SparkAsset {
 
 SparkAsset.SIZE = 24;
 
-class Spark {
+export class Spark {
   constructor(context, startX, startY, endX, endY, speed, acceleration = 0) {
     this._position = new SparkMovement(startX, startY, endX, endY, speed, acceleration);
     this._asset = new SparkAsset(context);

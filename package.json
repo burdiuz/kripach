@@ -6,10 +6,14 @@
   "private": true,
   "author": "Oleg Galaburda <burdiuz@gmail.com> (http://actualwave.com/)",
   "devDependencies": {
-    "express": "latest"
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.8",
+    "babel-preset-latest": "^6.16.0",
+    "express": "latest",
+    "webpack": "^1.13.3"
   },
   "dependencies": {
     "ConvexText": "gist:668290ad10fe4fd5ad26af8577a11b95",
-	"MultiHandlerFactory": "gist:b4204ced61822b154424870460fef6ca"
+    "MultiHandlerFactory": "gist:b4204ced61822b154424870460fef6ca"
   }
 }
