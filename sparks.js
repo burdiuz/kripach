@@ -30,7 +30,7 @@ class SparksHistory {
 }
 
 class SparksSource {
-  constructor(context, x, y, duration, maxDistance = 250, sparkCount = 5) {
+  constructor(context, x, y, duration, maxDistance = 200, sparkCount = 5) {
     this._context = context;
     this._x = x;
     this._y = y;
@@ -41,7 +41,7 @@ class SparksSource {
     this._sparks = [];
     while (sparkCount > 0) {
       let eff = Math.random();
-      let distance = maxDistance >> 1 + eff * (maxDistance >> 1);
+      let distance = eff * maxDistance;
       let duration = maxDuration * 0.5 + eff * (maxDuration * 0.5);
       this._sparks.push(new Spark(this._context, this._x, this._y, Math.random() > 0.5 ? distance : -distance, height, SparkMovement.getSpeed(duration)));
       sparkCount--;
@@ -75,8 +75,8 @@ class SparksSource {
 }
 
 class Sparks extends SparksSource {
-  constructor(context, x, y, maxDistance = 250, sparkCount = Sparks.getRandomSparkCount()) {
-    super(context, x, y, maxDistance / 250, maxDistance, sparkCount);
+  constructor(context, x, y, maxDistance = 200, sparkCount = Sparks.getRandomSparkCount()) {
+    super(context, x, y, maxDistance / 150, maxDistance, sparkCount);
   }
 
   *animate() {
@@ -115,7 +115,7 @@ class SparkPosition {
 
   update(progress) {
     const x = this.offsetX * progress;
-    const y = this.offsetY * (progress * progress * progress / 3);
+    const y = this.offsetY  * progress * progress * progress;
     this.x = this.startX + x;
     this.y = this.startY + y;
   }
