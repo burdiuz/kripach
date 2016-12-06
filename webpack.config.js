@@ -3,8 +3,8 @@ const path = require('path');
 module.exports = {
   entry: ['babel-polyfill', './source/index.js'],
   output: {
-    path: './bin',
-    filename: 'app.bundle.js',
+    path: './',
+    filename: 'bin/app.bundle.js',
   },
   module: {
     loaders: [{
@@ -26,5 +26,8 @@ module.exports = {
         warnings: false
       }
     })
-  ]
+  ],
+  devServer: {
+    inline: true
+  }
 };
