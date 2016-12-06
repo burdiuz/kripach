@@ -171,7 +171,7 @@ class SparkAsset {
       this._cached = SparkAsset.createAsset(this.maxBlur);
     }
     this.context.filter = 'opacity(' + parseInt(25 + (1 - progress) * 75 >>> 0) + '%)';
-    this.context.drawImage(this._cached, x - POS, y - POS);
+    this.context.drawImage(this._cached, x - POS >>> 0, y - POS >>> 0);
   }
 
   static getRandomMaxBlur() {
