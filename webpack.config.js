@@ -9,7 +9,6 @@ module.exports = {
   module: {
     loaders: [{
       test: /\.js$/,
-      //exclude: /node_modules/,
       include: [
         path.resolve(__dirname, 'node_modules/Color'),
         path.resolve(__dirname, 'node_modules/Pixels'),
@@ -21,11 +20,13 @@ module.exports = {
     }]
   },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
+    //*
+     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
       }
-    })
+     })
+     //*/
   ],
   devServer: {
     inline: true

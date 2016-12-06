@@ -89,9 +89,9 @@ export default class AssetCanvas extends WallLightTextDraw(LightTextDraw(LampTex
       return this.drawSpecularLightText().then((light) => {
         return this.drawLampText().then((lamp) => {
           return [wall, light, lamp];
-        });
-      });
-    });
+        }, (error) => console.error(error));
+      }, (error) => console.error(error));
+    }, (error) => console.error(error));
   }
 
   compose() {
@@ -101,7 +101,7 @@ export default class AssetCanvas extends WallLightTextDraw(LightTextDraw(LampTex
         this.draw(layer);
       }
       return this.capture();
-    });
+    }, (error) => console.error(error));
   }
 
   static _backgroundMandatoryParam() {
