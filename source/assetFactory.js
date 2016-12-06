@@ -97,6 +97,7 @@ export default class AssetCanvas extends WallLightTextDraw(LightTextDraw(LampTex
   compose() {
     return this.drawLayers().then((layers) => {
       this.clear();
+      this._context.filter = 'blur(1px)';
       for (let layer of layers) {
         this.draw(layer);
       }

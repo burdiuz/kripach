@@ -65,9 +65,9 @@ scene.onFrame = (() => {
     let ratio = sound.currentRatio;
     context.clearRect(0, 0, canvas.width, canvas.height);
     // use source-in to make lightened wall
-    context.filter = 'opacity(' + parseInt(75 + (1 - ratio) * 25 >>> 0) + '%) blur(1px)';
+    context.filter = 'opacity(' + parseInt(75 + (1 - ratio) * 25 >>> 0) + '%)';
     context.drawImage(staticImg, 0, 0);
-    context.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%) blur(1px)';
+    context.filter = 'opacity(' + parseInt(ratio * 100 >>> 0) + '%)';
     context.drawImage(animatedImg, 0, 0);
     context.filter = 'none';
     if (sparks.animate()) {
