@@ -35,8 +35,13 @@ export default class SoundEffect {
     return this._soundElement.play();
   }
 
+  pause() {
+    this._soundElement.pause();
+  }
+
   stop() {
-    return this._soundElement.stop();
+    this._soundElement.pause();
+    this._soundElement.currentTime = 0;
   }
 
   get loop() {

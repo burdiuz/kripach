@@ -5,10 +5,14 @@ export default class Scene {
     this.onFrame = onFrame;
     this._framesPerSecond = fps;
     this._intervalHandler = () => {
-      if (this._invalid) {
+      if (this._invalid && !this._frameRequested) {
         this._invalid = false;
         if (this._onFrame) {
-          window.requestAnimationFrame(this._onFrame);
+          window.requestAnimationFrame(() => {
+            this._frameRequested = false;
+            this._onFrame();
+          });
+          this._frameRequested = true;
         }
       }
     };
