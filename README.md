@@ -1,4 +1,4 @@
-# Kripach
+# [Kripach](https://burdiuz.github.io/kripach/)
 Project for learning how Canvas 2D context works. Written in ES6, ready for babel/webpack. It uses import and export directives, not supported by any browser yet, so it as to be converted with webpack first.
 
 # Development
