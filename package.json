@@ -9,8 +9,7 @@
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.8",
     "babel-polyfill": "^6.16.0",
-    "babel-preset-latest": "^6.16.0",
-    "babel-preset-stage-0": "^6.16.0",
+    "babel-preset-env": "^1.7.0",
     "express": "latest",
     "webpack": "^1.13.3",
     "webpack-dev-server": "^1.16.2"
