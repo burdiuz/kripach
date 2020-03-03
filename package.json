@@ -12,7 +12,7 @@
     "babel-preset-env": "^1.7.0",
     "express": "latest",
     "webpack": "^1.13.3",
-    "webpack-dev-server": "^1.16.2"
+    "webpack-dev-server": "^3.1.11"
   },
   "dependencies": {
     "ConvexText": "gist:668290ad10fe4fd5ad26af8577a11b95",
