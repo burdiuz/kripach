@@ -5,7 +5,7 @@ import SoundEffect from "./soundEffect";
 import SoundEvents from "./soundEvent";
 
 let animatedImg, staticImg;
-const sound = new SoundEffect("sound", 5, 2);
+let sound;
 const scene = new Scene(null, 24);
 const bgImg = new Image();
 const events = new SoundEvents("sound");
@@ -34,31 +34,31 @@ let sparks;
 
 const start = () => {
   sparks = new SparksHistory(canvas.getContext("2d"));
-  sound.play(true);
+  
+  // Have to start playing sound earlier, immediately in user-initiated event handler
+  // sound.play(true);
+
   events.add(1891, () => sparks.start(305, 667));
   events.add(3015, () => sparks.start(457, 643));
 };
 
-const draw = () => {
+const draw = async () => {
   let assetFactory;
 
   assetFactory = new AssetCanvas("asset_factory", bgImg, (context) => {
     _animatedText(context, 182, 720, -Math.PI / 18);
   });
 
-  assetFactory.compose().then((image) => {
-    animatedImg = image;
+  animatedImg = await assetFactory.compose();
 
-    assetFactory.setTextDrawer((context) => {
-      _staticText(context, 120, 500, -Math.PI / 18);
-    });
-
-    assetFactory.compose().then((image) => {
-      staticImg = image;
-      start();
-    });
+  assetFactory.setTextDrawer((context) => {
+    _staticText(context, 120, 500, -Math.PI / 18);
   });
-}
+
+  staticImg = await assetFactory.compose();
+
+  start();
+};
 
 bgImg.addEventListener("load", () => {
   document.querySelector("#play_container").style.visibility = "visible";
@@ -69,24 +69,39 @@ scene.onFrame = (() => {
   const context = canvas.getContext("2d");
 
   return () => {
-    if (!sound.playing) return;
-    let ratio = sound.currentRatio;
+    if (!sound || !sound.playing) return;
+    
+    const ratio = sound.currentRatio;
     context.clearRect(0, 0, canvas.width, canvas.height);
+
     // use source-in to make lightened wall
-    context.filter =
-      "opacity(" + parseInt((75 + (1 - ratio) * 25) >>> 0) + "%)";
-    context.drawImage(staticImg, 0, 0);
-    context.filter = "opacity(" + parseInt((ratio * 100) >>> 0) + "%)";
-    context.drawImage(animatedImg, 0, 0);
+    if(staticImg) {
+      context.filter =
+        "opacity(" + parseInt((75 + (1 - ratio) * 25) >>> 0) + "%)";
+      context.drawImage(staticImg, 0, 0);
+    }
+
+    if(animatedImg) {
+      context.filter = "opacity(" + parseInt((ratio * 100) >>> 0) + "%)";
+      context.drawImage(animatedImg, 0, 0);
+    }
+
     context.filter = "none";
-    if (sparks.animate()) {
+
+    if (sparks && sparks.animate()) {
       scene.invalid();
     }
   };
 })();
 
-sound.onChange = () => {
-  scene.invalid();
+const initSoundEffects = () => {
+  sound = new SoundEffect("sound", 5, 2);
+
+  sound.onChange = () => {
+    scene.invalid();
+  };
+
+  sound.play(true);
 };
 
 let hasStarted = false;
@@ -101,6 +116,7 @@ document.addEventListener("visibilitychange", () => {
 
 window.startAnimation = () => {
   draw();
+  initSoundEffects();
   hasStarted = true;
   document.querySelector("#play_container").remove();
 };
